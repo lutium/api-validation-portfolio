@@ -1,0 +1,393 @@
+{
+  "info": {
+    "_postman_id": "1559c641-553f-49e9-aeb4-dd200c817c81",
+    "name": "GitHub API Advanced Portfolio",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55550807",
+    "_collection_link": "https://go.postman.co/collection/55550807-1559c641-553f-49e9-aeb4-dd200c817c81?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get Authenticated User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Очікуваний статус-код 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{github_url}}/user",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User - Invalid Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус-код має бути 401 Unauthorized\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 123456789",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{github_url}}/user",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "user"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Repository",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус-код 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "var jsonData = pm.response.json();\r",
+              "\r",
+              "// Зберігаємо логін власника (lutium)\r",
+              "pm.environment.set(\"repo_owner\", jsonData.owner.login);\r",
+              "\r",
+              "// Зберігаємо назву репозиторію\r",
+              "pm.environment.set(\"repo_name\", jsonData.name);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"postman-qa-automation-portfolio-v2\",\r\n  \"description\": \"Automated repository created via Postman API testing\",\r\n  \"private\": true,\r\n  \"has_issues\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{github_url}}/user/repos",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "user",
+            "repos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Repository - Duplicate Name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус-код має бути 422 Unprocessable Entity\", function () {\r",
+              "    pm.response.to.have.status(422);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"postman-qa-automation-portfolio-v2\",\r\n  \"description\": \"Automated repository created via Postman API testing\",\r\n  \"private\": true,\r\n  \"has_issues\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{github_url}}/user/repos",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "user",
+            "repos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Issue",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Очікуваний статус-код 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "// Парсимо відповідь і зберігаємо номер Issue\r",
+              "var jsonData = pm.response.json();\r",
+              "pm.environment.set(\"issue_number\", jsonData.number);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Automated Bug Report: Login Endpoint failing\",\r\n  \"body\": \"This issue was automatically generated via Postman API testing collection.\",\r\n  \"labels\": [\"bug\"]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{github_url}}/repos/{{repo_owner}}/{{repo_name}}/issues",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "repos",
+            "{{repo_owner}}",
+            "{{repo_name}}",
+            "issues"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Close Issue",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Очікуваний статус-код 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{github_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"state\": \"closed\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{github_url}}/repos/{{repo_owner}}/{{repo_name}}/issues/{{issue_number}}",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "repos",
+            "{{repo_owner}}",
+            "{{repo_name}}",
+            "issues",
+            "{{issue_number}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Repository",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Очікуваний статус-код 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{github_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{github_token}}",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "key": "Accept",
+            "value": "application/vnd.github+json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{github_url}}/repos/{{repo_owner}}/{{repo_name}}",
+          "host": [
+            "{{github_url}}"
+          ],
+          "path": [
+            "repos",
+            "{{repo_owner}}",
+            "{{repo_name}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
